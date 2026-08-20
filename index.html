@@ -1,4 +1,4 @@
-<!doctype html>
+
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -18,30 +18,3 @@ h2{font-size:20px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12p
 </style>
 </head>
 <body>
-<header><div class="logo">🛒 كل المنتجات | خصومات</div><div class="sub">كل احتياجاتك في مكان واحد وبأسعار مخفضة</div><input id="search" class="search" placeholder="ابحث عن منتج..."></header>
-<main>
-<section class="banner"><h1>🔥 عروض اليوم</h1><p>خصومات على الخضار والفاكهة والأدوات المدرسية والمنتجات اليومية.</p></section>
-<div class="cats" id="cats"></div>
-<h2>المنتجات</h2><div class="grid" id="products"></div>
-</main>
-<div class="cart"><span>🛒 السلة: <b id="count">0</b> منتج — <b id="total">0</b> ج.م</span><button onclick="openCart()">عرض السلة</button></div>
-<div class="modal" id="modal"><div class="sheet"><button class="close" onclick="closeCart()">×</button><h2>سلة المشتريات</h2><div id="cartItems"></div><button class="checkout" onclick="checkout()">إتمام الطلب — الدفع عند الاستلام</button></div></div>
-<script>
-const products=[
-["طماطم","خضار","🍅",35,29],["شطة","خضار","🌶️",30,24],["بطاطس","خضار","🥔",40,32],["بصل","خضار","🧅",35,28],["خيار","خضار","🥒",35,27],["جزر","خضار","🥕",30,23],
-["بطيخ","فاكهة","🍉",90,75],["عنب","فاكهة","🍇",85,69],["تفاح","فاكهة","🍎",100,82],["موز","فاكهة","🍌",70,59],["برتقال","فاكهة","🍊",65,52],
-["قلم جاف","مدرسة","🖊️",15,10],["كراسة","مدرسة","📒",35,27],["قلم رصاص","مدرسة","✏️",12,8],["أستيكة","مدرسة","◻️",10,7],["مسطرة","مدرسة","📏",20,14],
-["مياه معدنية","يومي","💧",12,9],["عصير","يومي","🧃",25,19],["مناديل","يومي","🧻",35,29],["منظف","يومي","🧴",55,44]
-];
-let cart={};let cat="الكل";
-const cats=["الكل","خضار","فاكهة","مدرسة","يومي"];
-function renderCats(){catsEl.innerHTML=cats.map(c=>`<button class="cat ${c===cat?'active':''}" onclick="cat='${c}';render()">${c}</button>`).join("")}
-function render(){renderCats();let q=search.value.trim();let list=products.filter(p=>(cat==="الكل"||p[1]===cat)&&p[0].includes(q));productsEl.innerHTML=list.map((p,i)=>`<div class="card"><div class="pic">${p[2]}</div><div class="name">${p[0]}</div><div class="old">${p[3]} ج.م</div><div class="price">${p[4]} ج.م</div><button class="add" onclick="add('${p[0]}')">أضف للسلة</button></div>`).join("")}
-function add(name){cart[name]=(cart[name]||0)+1;update()}
-function update(){let count=0,total=0;for(let n in cart){let p=products.find(x=>x[0]===n);count+=cart[n];total+=p[4]*cart[n]}document.getElementById("count").textContent=count;document.getElementById("total").textContent=total}
-function openCart(){let el=document.getElementById("cartItems");let keys=Object.keys(cart);el.innerHTML=keys.length?keys.map(n=>{let p=products.find(x=>x[0]===n);return `<div class="row"><span>${p[2]} ${n} × ${cart[n]}</span><b>${p[4]*cart[n]} ج.م</b></div>`}).join(""):"السلة فارغة";document.getElementById("modal").style.display="flex"}
-function closeCart(){document.getElementById("modal").style.display="none"}
-function checkout(){if(!Object.keys(cart).length)return alert("السلة فارغة");alert("تم تسجيل طلب تجريبي بنجاح 🎉\\nسيتم التواصل معك لتأكيد العنوان.");cart={};update();closeCart()}
-const catsEl=document.getElementById("cats"),productsEl=document.getElementById("products"),search=document.getElementById("search");search.addEventListener("input",render);render();
-</script>
-</body></html>
