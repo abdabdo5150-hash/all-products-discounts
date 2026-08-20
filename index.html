@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>كل المنتجات | خصومات</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f6f7f9;color:#202124}
+header{background:#fff;padding:16px;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px #0001}
+.logo{font-size:24px;font-weight:800}.sub{color:#666;font-size:13px;margin-top:4px}
+.search{margin-top:12px;width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;font-size:16px}
+main{padding:16px;max-width:900px;margin:auto}.banner{background:linear-gradient(135deg,#ff6b35,#ffb000);color:#fff;border-radius:18px;padding:22px;margin-bottom:18px}
+.banner h1{margin:0 0 7px;font-size:28px}.banner p{margin:0}.cats{display:flex;gap:8px;overflow:auto;margin-bottom:18px}.cat{border:0;background:#fff;padding:10px 14px;border-radius:20px;white-space:nowrap;box-shadow:0 1px 5px #0001;cursor:pointer}.cat.active{background:#111;color:#fff}
+h2{font-size:20px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.card{background:#fff;border-radius:16px;padding:12px;box-shadow:0 2px 8px #0000000d}.pic{height:120px;border-radius:12px;background:#f1f3f5;display:flex;align-items:center;justify-content:center;font-size:55px}.name{font-weight:700;margin-top:10px}.old{text-decoration:line-through;color:#999;font-size:13px}.price{font-size:18px;font-weight:800;margin:3px 0 9px}.add{width:100%;border:0;background:#111;color:#fff;padding:10px;border-radius:10px;cursor:pointer}
+.cart{position:fixed;bottom:16px;left:16px;right:16px;background:#111;color:#fff;border-radius:14px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 5px 20px #0003}.cart button{background:#ffb000;border:0;border-radius:10px;padding:9px 14px;font-weight:bold}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:10;align-items:end}.sheet{background:#fff;width:100%;max-height:80vh;border-radius:22px 22px 0 0;padding:18px;overflow:auto}.close{float:left;border:0;background:#eee;border-radius:50%;width:34px;height:34px}.row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee}.checkout{width:100%;padding:13px;background:#ff6b35;color:#fff;border:0;border-radius:12px;font-size:16px;margin-top:14px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="logo">🛒 كل المنتجات | خصومات</div><div class="sub">كل احتياجاتك في مكان واحد وبأسعار مخفضة</div><input id="search" class="search" placeholder="ابحث عن منتج..."></header>
+<main>
+<section class="banner"><h1>🔥 عروض اليوم</h1><p>خصومات على الخضار والفاكهة والأدوات المدرسية والمنتجات اليومية.</p></section>
+<div class="cats" id="cats"></div>
+<h2>المنتجات</h2><div class="grid" id="products"></div>
+</main>
+<div class="cart"><span>🛒 السلة: <b id="count">0</b> منتج — <b id="total">0</b> ج.م</span><button onclick="openCart()">عرض السلة</button></div>
+<div class="modal" id="modal"><div class="sheet"><button class="close" onclick="closeCart()">×</button><h2>سلة المشتريات</h2><div id="cartItems"></div><button class="checkout" onclick="checkout()">إتمام الطلب — الدفع عند الاستلام</button></div></div>
+<script>
+const products=[
+["طماطم","خضار","🍅",35,29],["شطة","خضار","🌶️",30,24],["بطاطس","خضار","🥔",40,32],["بصل","خضار","🧅",35,28],["خيار","خضار","🥒",35,27],["جزر","خضار","🥕",30,23],
+["بطيخ","فاكهة","🍉",90,75],["عنب","فاكهة","🍇",85,69],["تفاح","فاكهة","🍎",100,82],["موز","فاكهة","🍌",70,59],["برتقال","فاكهة","🍊",65,52],
+["قلم جاف","مدرسة","🖊️",15,10],["كراسة","مدرسة","📒",35,27],["قلم رصاص","مدرسة","✏️",12,8],["أستيكة","مدرسة","◻️",10,7],["مسطرة","مدرسة","📏",20,14],
+["مياه معدنية","يومي","💧",12,9],["عصير","يومي","🧃",25,19],["مناديل","يومي","🧻",35,29],["منظف","يومي","🧴",55,44]
+];
+let cart={};let cat="الكل";
+const cats=["الكل","خضار","فاكهة","مدرسة","يومي"];
+function renderCats(){catsEl.innerHTML=cats.map(c=>`<button class="cat ${c===cat?'active':''}" onclick="cat='${c}';render()">${c}</button>`).join("")}
+function render(){renderCats();let q=search.value.trim();let list=products.filter(p=>(cat==="الكل"||p[1]===cat)&&p[0].includes(q));productsEl.innerHTML=list.map((p,i)=>`<div class="card"><div class="pic">${p[2]}</div><div class="name">${p[0]}</div><div class="old">${p[3]} ج.م</div><div class="price">${p[4]} ج.م</div><button class="add" onclick="add('${p[0]}')">أضف للسلة</button></div>`).join("")}
+function add(name){cart[name]=(cart[name]||0)+1;update()}
+function update(){let count=0,total=0;for(let n in cart){let p=products.find(x=>x[0]===n);count+=cart[n];total+=p[4]*cart[n]}document.getElementById("count").textContent=count;document.getElementById("total").textContent=total}
+function openCart(){let el=document.getElementById("cartItems");let keys=Object.keys(cart);el.innerHTML=keys.length?keys.map(n=>{let p=products.find(x=>x[0]===n);return `<div class="row"><span>${p[2]} ${n} × ${cart[n]}</span><b>${p[4]*cart[n]} ج.م</b></div>`}).join(""):"السلة فارغة";document.getElementById("modal").style.display="flex"}
+function closeCart(){document.getElementById("modal").style.display="none"}
+function checkout(){if(!Object.keys(cart).length)return alert("السلة فارغة");alert("تم تسجيل طلب تجريبي بنجاح 🎉\\nسيتم التواصل معك لتأكيد العنوان.");cart={};update();closeCart()}
+const catsEl=document.getElementById("cats"),productsEl=document.getElementById("products"),search=document.getElementById("search");search.addEventListener("input",render);render();
+</script>
+</body></html>
